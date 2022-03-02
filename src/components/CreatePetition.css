@@ -1,0 +1,152 @@
+.MuiDataGrid-cellCenter {
+  justify-content: center;
+}
+
+.pdf-container {
+  width: 100%;
+  height: 630px;
+  background-color: #e4e4e4;
+  position: relative;
+  overflow-y: auto;
+  display: block;
+  justify-content: center;
+  align-items: center;
+}
+
+.img-pettion {
+  float: left;
+  width: 105%;
+  height: auto;
+}
+
+.float-sigture {
+  position: absolute;
+  top: 708.5px;
+  right: 355px;
+}
+
+.img-signuture {
+  float: right;
+  width: 150px;
+  height: auto;
+}
+
+.float-name {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  top: 724px;
+  right: 391px;
+}
+
+.float-fname {
+  position: absolute;
+  font-size: 12px;
+  width: 135px;
+  top: 33px;
+  right: -29px;
+  display: flex;
+  justify-content: center;
+}
+
+.float-div-checkbox {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  top: 625px;
+  right: 560px;
+}
+
+.float-checkbox {
+  position: absolute;
+  font-size: 12px;
+  width: 135px;
+  top: 33px;
+  right: -29px;
+  display: flex;
+  justify-content: center;
+}
+
+.float-sigtureBranchHead {
+  position: absolute;
+  top: 708.5px;
+  right: 45px;
+}
+
+.img-sigtureBranchHead {
+  float: right;
+  width: 150px;
+  height: auto;
+}
+
+.float-nameBranchHead {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  top: 724px;
+  right: 85px;
+}
+
+.float-fnameBranchHead {
+  position: absolute;
+  font-size: 12px;
+  width: 135px;
+  top: 33px;
+  right: -29px;
+  display: flex;
+  justify-content: center;
+}
+
+.float-div-checkbox2 {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  top: 625px;
+  right: 255px;
+}
+
+.float-checkbox2 {
+  position: absolute;
+  font-size: 12px;
+  width: 135px;
+  top: 33px;
+  right: -29px;
+  display: flex;
+  justify-content: center;
+}
+
+.float-approve-day0 {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  top: 743px;
+  right: 391px;
+}
+
+.float-approve-day1 {
+  position: absolute;
+  font-size: 12px;
+  width: 120px;
+  top: 33px;
+  right: -29px;
+  display: flex;
+  justify-content: center;
+}
+
+.float-approve-branchhead0 {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  top: 743px;
+  right: 83px;
+}
+
+.float-approve-branchhead1 {
+  position: absolute;
+  font-size: 12px;
+  width: 120px;
+  top: 33px;
+  right: -29px;
+  display: flex;
+  justify-content: center;
+}
