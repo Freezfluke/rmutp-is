@@ -1,2 +1,2 @@
-release: npm install 
+release: npm install & npm audit fix --force
 web: npm start
