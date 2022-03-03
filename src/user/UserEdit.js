@@ -1,37 +1,13 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import Divider from "@mui/material/Divider";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import CloseIcon from "@mui/icons-material/Close";
-import Slide from "@mui/material/Slide";
-import SaveIcon from "@mui/icons-material/Save";
-import { DataGrid } from "@mui/x-data-grid";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import TextField from "@mui/material/TextField";
-import { styled } from "@mui/material/styles";
-import AddIcon from "@mui/icons-material/Add";
-import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
-import Fab from "@mui/material/Fab";
 import "../components/CreatePetition.css";
-
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
-import moment from "moment";
-
 import { useSelector } from "react-redux";
 import { read, updateUser } from "../actions/auth";
 import { allClassRoom } from "../actions/classRooms";
 import { useParams } from "react-router-dom";
 import UserEditForm from "../components/UserEditForm";
+
 
 const UserEdit = () => {
   const match = { params: useParams() };
@@ -41,6 +17,7 @@ const UserEdit = () => {
   const { user } = auth;
   //state
   const [allClass, setAllClass] = useState([]);
+  const [openReload, setopenReload] = useState(false);
   const [values, setValues] = useState({
     name: "",
     studentCard: "",
@@ -96,11 +73,11 @@ const UserEdit = () => {
   };
 
   const loadAllPetitions = async () => {
+    setopenReload(true);
     console.log("user", match);
     let res = await read(match.params.userId);
     console.log(res);
     // console.log("res", res);
-
     setValues({
       ...values,
       ...res.data,
@@ -117,8 +94,8 @@ const UserEdit = () => {
         `${process.env.REACT_APP_API}/user/teacherSignature/${res.data._id}`
       );
     }
-
     setPreview(`${process.env.REACT_APP_API}/user/userImage/${res.data._id}`);
+    setopenReload(false);
   };
 
   const handleSubmit = async (e) => {
@@ -176,6 +153,8 @@ const UserEdit = () => {
   return (
     <div>
       <UserEditForm
+        setopenReload={setopenReload}
+        openReload={openReload}
         handleSignatureChange={handleSignatureChange}
         password={password}
         values={values}

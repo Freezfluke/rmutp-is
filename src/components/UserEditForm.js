@@ -19,6 +19,8 @@ import Grid from "@mui/material/Grid";
 import Avatar from "@material-ui/core/Avatar";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const ValidationTextField = styled(TextField)({
   "& input:valid + fieldset": {
@@ -58,6 +60,8 @@ const UserEditForm = (props) => {
     handleSignatureChange,
     allClass,
     setAllClass,
+    setOpenReload,
+    openReload,
   } = props;
 
   var {
@@ -530,6 +534,13 @@ const UserEditForm = (props) => {
 
   return (
     <form onSubmit={handleSubmit}>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openReload}
+      >
+        {" "}
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <div
         style={{
           height: "auto",

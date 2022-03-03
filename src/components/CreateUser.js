@@ -15,6 +15,7 @@ import UserCreateForm from "./UserCreateForm";
 
 const CreateUser = (props) => {
   const [open, setOpen] = useState(props.open);
+
   const [allClass, setAllClass] = useState([0]);
   const [values, setValues] = useState({
     email: "",
