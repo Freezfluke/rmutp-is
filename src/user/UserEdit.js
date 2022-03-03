@@ -83,11 +83,16 @@ const UserEdit = () => {
         "https://track.thailandpost.co.th/img/No_signature.cdf1fd67.png"
       );
     } else {
-      setPreviewSignature(
+      await setPreviewSignature(
         `${process.env.REACT_APP_API}/user/teacherSignature/${res.data._id}`
       );
     }
-    setPreview(`${process.env.REACT_APP_API}/user/userImage/${res.data._id}`);
+    await setPreview(
+      `${process.env.REACT_APP_API}/user/userImage/${res.data._id}`
+    );
+    setTimeout(() => {
+      setopenReload(false);
+    }, 1000);
   };
 
   const handleSubmit = async (e) => {
