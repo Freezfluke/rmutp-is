@@ -17,6 +17,8 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
 import InputBase from "@mui/material/InputBase";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
 //import getallapiPetitions
 import { useState, useEffect } from "react";
@@ -109,6 +111,7 @@ const UsersList = () => {
   const [postsPerPage, setPostsPerPage] = useState(10);
   const [statusTab, setStatusTab] = useState("");
   const [searchName, setSearchName] = useState("");
+  const [openReload, setOpenReload] = useState(false);
 
   // const { user } = auth;
   const [owner, setOwner] = useState(false);
@@ -219,6 +222,7 @@ const UsersList = () => {
   };
 
   const loadAllPetitions = async () => {
+    setOpenReload(true);
     let res = await allUser();
     console.log("res", res);
     setAlluser(res.data);
@@ -230,6 +234,7 @@ const UsersList = () => {
       return e.role === "นักศึกษา";
     });
     setAllStudent(resStudent);
+    setOpenReload(false);
   };
 
   const handleClickOpen = () => {
@@ -251,6 +256,13 @@ const UsersList = () => {
           width: "75%",
         }}
       >
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={openReload}
+        >
+          {" "}
+          <CircularProgress color="inherit" />
+        </Backdrop>
         <div
           style={{
             display: "flex",
