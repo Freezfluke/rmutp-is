@@ -53,7 +53,7 @@ const LoginForm = ({
       <Box sx={{ width: 500, maxWidth: "100%", marginTop: 2 }}>
         <ValidationTextField
           style={{ marginBottom: "10px" }}
-          label="รหัสประจำตัว"
+          label="อีเมล"
           required
           variant="outlined"
           id="validation-outlined-input"

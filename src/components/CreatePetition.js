@@ -100,7 +100,7 @@ const CreatePetition = (props) => {
       toast.success("สร้างแบบคำร้องเรียบร้อยแล้ว");
       setTimeout(() => {
         window.location.reload();
-      }, 3000);
+      }, 1000);
     } catch (err) {
       if (err.response.status === 400) {
         console.log(err);

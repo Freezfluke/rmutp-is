@@ -124,9 +124,9 @@ const CreatePetitionForm = (props) => {
             hidden
           />
         </Button>
-        <div>
+        {/* <div>
           <pre>{JSON.stringify(values, null, 4)}</pre>
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   );
