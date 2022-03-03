@@ -461,41 +461,9 @@ const UserEditForm = (props) => {
     </div>
   );
 
-  const previewImage = () => (
-    <Stack
-      direction="row"
-      alignItems="center"
-      spacing={2}
-      sx={{ display: "flex", justifyContent: "center", mt: 2 }}
-    >
-      {" "}
-      <Avatar
-        src={prwview}
-        sx={{ width: 240, height: 240, alignItems: "center" }}
-      />
-    </Stack>
-  );
-
-  console.log("classRoom", classRoom);
-
-  console.log("classRoom", classRoom);
-
-  console.log("Classroom", classRoom);
   const Input = styled("input")({
     display: "none",
   });
-
-  const BootstrapTooltip = styled(({ className, ...props }) => (
-    <Tooltip {...props} arrow classes={{ popper: className }} />
-  ))(({ theme }) => ({
-    [`& .${tooltipClasses.arrow}`]: {
-      color: theme.palette.common.black,
-    },
-    [`& .${tooltipClasses.tooltip}`]: {
-      backgroundColor: theme.palette.common.black,
-      fontSize: "16px",
-    },
-  }));
 
   const previewPetition = () => (
     <Stack

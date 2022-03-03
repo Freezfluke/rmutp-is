@@ -73,30 +73,21 @@ const UserEdit = () => {
 
   const loadAllPetitions = async () => {
     setopenReload(true);
-    console.log("user", match);
     let res = await read(match.params.userId);
-    console.log(res);
-    // console.log("res", res);
-    await setValues({
+    setValues({
       ...values,
       ...res.data,
     });
-    // const jsonClassRoom = JSON.parse(classRoom);
-    console.log(classRoom);
-    console.log("values", values);
     if (!res.data.teacherSignature) {
       setPreviewSignature(
         "https://track.thailandpost.co.th/img/No_signature.cdf1fd67.png"
       );
     } else {
-      await setPreviewSignature(
+      setPreviewSignature(
         `${process.env.REACT_APP_API}/user/teacherSignature/${res.data._id}`
       );
     }
-    await setPreview(
-      `${process.env.REACT_APP_API}/user/userImage/${res.data._id}`
-    );
-    setopenReload(false);
+    setPreview(`${process.env.REACT_APP_API}/user/userImage/${res.data._id}`);
   };
 
   const handleSubmit = async (e) => {
