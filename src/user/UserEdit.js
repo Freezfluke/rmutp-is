@@ -92,7 +92,7 @@ const UserEdit = () => {
     );
     setTimeout(() => {
       setopenReload(false);
-    }, 8000);
+    }, 6000);
   };
 
   const handleSubmit = async (e) => {

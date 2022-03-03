@@ -15,7 +15,8 @@ import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import Box from "@mui/material/Box";
-
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 import SearchIcon from "@mui/icons-material/Search";
 
 //import getallapiPetitions
@@ -98,6 +99,7 @@ const ClassRoom = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage, setPostsPerPage] = useState(10);
   const [searchClassRoom, setSearchClassRoom] = useState("");
+  const [openReload, setOpenReload] = useState(false);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -146,6 +148,7 @@ const ClassRoom = () => {
   );
 
   const loadAllTeacher = async () => {
+    setOpenReload(true);
     let res = await allUser();
     let resRoom = await allClassRoom();
     let allresRoom = [...resRoom.data];
@@ -165,6 +168,7 @@ const ClassRoom = () => {
       setAllclassRoom(dataTeacher);
       console.log(dataTeacher);
     });
+    setOpenReload(false);
   };
 
   const handleClickOpen = () => {
@@ -194,6 +198,13 @@ const ClassRoom = () => {
           width: "75%",
         }}
       >
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={openReload}
+        >
+          {" "}
+          <CircularProgress color="inherit" />
+        </Backdrop>
         <div
           style={{
             display: "flex",
