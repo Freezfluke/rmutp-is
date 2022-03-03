@@ -64,6 +64,8 @@ const PetitionEditForm = (props) => {
     nameBranchHead,
     setNameBranchHead,
     handleClickStaffApprove,
+    setopenReload,
+    openReload,
   } = props;
   const {
     petitionName,
@@ -75,7 +77,6 @@ const PetitionEditForm = (props) => {
     comment,
   } = values;
 
-  console.log("comment", comment);
   const myArrayDayTeacher = dateAppoveTeacher.split("/");
   const dayTeacher = myArrayDayTeacher[0];
   const monthTeacher = myArrayDayTeacher[1];
@@ -464,6 +465,13 @@ const PetitionEditForm = (props) => {
           display: "flex",
         }}
       >
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={openReload}
+        >
+          {" "}
+          <CircularProgress color="inherit" />
+        </Backdrop>
         <div
           style={{
             height: "auto",

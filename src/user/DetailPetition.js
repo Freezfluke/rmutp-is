@@ -5,7 +5,6 @@ import { saveAs } from "file-saver";
 import axios from "axios";
 import "../components/CreatePetition.css";
 import moment from "moment";
-
 import { useSelector } from "react-redux";
 import { read, updatePetition } from "../actions/petitions";
 import { useParams } from "react-router-dom";
@@ -18,8 +17,10 @@ const DetailPetition = () => {
   const [nameTeacher, setNameTeacher] = useState("");
   const [nameBranchHead, setNameBranchHead] = useState("");
   const [message, setMessage] = useState("");
+  const [openReload, setopenReload] = useState(false);
   const { token } = auth;
   const { user } = auth;
+
   //state
   const [values, setValues] = useState({
     typePetition: "",
@@ -57,27 +58,28 @@ const DetailPetition = () => {
   }, []);
 
   const loadAllPetitions = async () => {
+    setopenReload(true);
     let res = await read(match.params.petitionId);
-    console.log("res", res);
-    setValues({ ...values, ...res.data });
-    console.log(values);
-    console.log(res.data.teacher.teacher.prefix);
-    setNameTeacher(
+    await setValues({ ...values, ...res.data });
+    await setNameTeacher(
       `${res.data.teacher.teacher.prefix}${res.data.teacher.teacher.name} ${res.data.teacher.teacher.lastname}`
     );
-    setNameBranchHead(
+    await setNameBranchHead(
       `${res.data.branchHead.prefix}${res.data.branchHead.name} ${res.data.branchHead.lastname}`
     );
-    setPreview(
+    await setPreview(
       `${process.env.REACT_APP_API}/petition/petitionImage/${res.data._id}`
     );
 
-    setSignatureTeacher(
+    await setSignatureTeacher(
       `${process.env.REACT_APP_API}/user/teacherSignature/${res.data.teacher.teacher._id}`
     );
-    setSignatureBranchHead(
+    await setSignatureBranchHead(
       `${process.env.REACT_APP_API}/user/teacherSignature/${res.data.branchHead._id}`
     );
+    setTimeout(() => {
+      setopenReload(false);
+    }, 6000);
   };
 
   const handleCreateAndDownloadPdf = async (e) => {
@@ -279,6 +281,8 @@ const DetailPetition = () => {
   return (
     <div>
       <PetitionEditForm
+        setopenReload={setopenReload}
+        openReload={openReload}
         handleClickCancel={handleClickCancel}
         handleComment={handleComment}
         message={message}
