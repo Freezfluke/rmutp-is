@@ -439,6 +439,13 @@ const PetitionEditForm = (props) => {
 
   return (
     <form onSubmit={handleSubmit}>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openReload}
+      >
+        {" "}
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <div
         style={{
           height: "auto",
@@ -447,13 +454,6 @@ const PetitionEditForm = (props) => {
           display: "flex",
         }}
       >
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={openReload}
-        >
-          {" "}
-          <CircularProgress color="inherit" />
-        </Backdrop>
         <div
           style={{
             height: "auto",

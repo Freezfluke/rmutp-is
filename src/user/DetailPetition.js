@@ -79,7 +79,7 @@ const DetailPetition = () => {
     );
     setTimeout(() => {
       setopenReload(false);
-    }, 6000);
+    }, 10000);
   };
 
   const handleCreateAndDownloadPdf = async (e) => {
