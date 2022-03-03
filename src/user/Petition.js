@@ -53,6 +53,8 @@ import DocumentScannerIcon from "@mui/icons-material/DocumentScanner";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
 //import getallapiPetitions
 import { useState, useEffect } from "react";
@@ -146,6 +148,7 @@ const Petition = () => {
   const [postsPerPage, setPostsPerPage] = useState(10);
   const [statusTab, setStatusTab] = useState("ทั้งหมด");
   const [searchName, setSearchName] = useState("");
+  const [openReload, setOpenReload] = useState(false);
 
   const navigate = useNavigate();
 
@@ -252,6 +255,7 @@ const Petition = () => {
   );
 
   const loadAllPetitions = async () => {
+    setOpenReload(true);
     let res = await allPetitions();
     if (user.role === "อาจารย์") {
       var owenTeacher = await res.data.filter((e) => {
@@ -327,6 +331,7 @@ const Petition = () => {
       });
       setPetitionsCancel(allPetitionsCancel);
     }
+    setOpenReload(false);
   };
 
   const handleClickOpen = () => {
@@ -339,6 +344,13 @@ const Petition = () => {
 
   return (
     <>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openReload}
+      >
+        {" "}
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <div
         style={{
           marginLeft: "200px",

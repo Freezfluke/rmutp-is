@@ -502,13 +502,6 @@ const UserEditForm = (props) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={openReload}
-      >
-        {" "}
-        <CircularProgress color="inherit" />
-      </Backdrop>
       <div
         style={{
           height: "auto",
@@ -518,6 +511,13 @@ const UserEditForm = (props) => {
           justifyContent: "center",
         }}
       >
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={openReload}
+        >
+          {" "}
+          <CircularProgress color="inherit" />
+        </Backdrop>
         <Card
           sx={{
             width: "90%",
