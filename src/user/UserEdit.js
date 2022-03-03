@@ -8,7 +8,6 @@ import { allClassRoom } from "../actions/classRooms";
 import { useParams } from "react-router-dom";
 import UserEditForm from "../components/UserEditForm";
 
-
 const UserEdit = () => {
   const match = { params: useParams() };
   // redux
@@ -78,7 +77,7 @@ const UserEdit = () => {
     let res = await read(match.params.userId);
     console.log(res);
     // console.log("res", res);
-    setValues({
+    await setValues({
       ...values,
       ...res.data,
     });
