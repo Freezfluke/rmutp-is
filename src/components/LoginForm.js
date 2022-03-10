@@ -60,7 +60,7 @@ const LoginForm = ({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           fullWidth
-          helperText="ตัวอย่าง 076150303303-5"
+          helperText="ตัวอย่าง xxxxx@rmutp.ac.th"
         />
         <ValidationTextField
           style={{ marginBottom: "10px" }}
@@ -73,6 +73,7 @@ const LoginForm = ({
           inputProps={{ minLength: 6, maxLength: 50 }}
           onChange={(e) => setPassword(e.target.value)}
           fullWidth
+          helperText='รหัสผ่านผ่านการใช้งาน "เลขบัตรประจำตัวประชาชน" '
         />
       </Box>
     </CardContent>
