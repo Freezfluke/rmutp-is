@@ -73,7 +73,7 @@ const LoginForm = ({
           inputProps={{ minLength: 6, maxLength: 50 }}
           onChange={(e) => setPassword(e.target.value)}
           fullWidth
-          helperText='รหัสผ่านผ่านการใช้งาน "เลขบัตรประจำตัวประชาชน" '
+          helperText='รหัสผ่านการใช้งาน "เลขบัตรประจำตัวประชาชน" '
         />
       </Box>
     </CardContent>
