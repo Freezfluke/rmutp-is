@@ -1,30 +1,7 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import Divider from "@mui/material/Divider";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import CloseIcon from "@mui/icons-material/Close";
-import Slide from "@mui/material/Slide";
-import SaveIcon from "@mui/icons-material/Save";
-import { DataGrid } from "@mui/x-data-grid";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import TextField from "@mui/material/TextField";
-import { styled } from "@mui/material/styles";
-import AddIcon from "@mui/icons-material/Add";
-import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
-import Fab from "@mui/material/Fab";
 import "../components/CreatePetition.css";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
-import moment from "moment";
 
 import { useSelector } from "react-redux";
 import { read, updateUser } from "../actions/auth";
@@ -122,7 +99,6 @@ const EditProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    var jsonClassRoom = JSON.stringify(classRoom);
     let userData = new FormData();
     userData.append("name", name);
     userData.append("studentCard", studentCard);
@@ -136,14 +112,14 @@ const EditProfile = () => {
     userData.append("status", status);
     userData.append("position", position);
     userData.append("role", role);
-    userData.append("classRoom", jsonClassRoom);
+    userData.append("classRoom", classRoom);
 
     console.log([...userData]);
 
     try {
       let res = await updateUser(token, userData, user._id);
       console.log("Update User", res);
-      toast.success(`แบบคำร้องนี้ ${res.data.name} ถูกอัพเดตเรียบร้อยแล้ว`);
+      toast.success(`ผู้ใช้งาน ${res.data.name} ถูกอัพเดตเรียบร้อยแล้ว`);
       setTimeout(() => {
         window.location.reload();
       }, 2000);

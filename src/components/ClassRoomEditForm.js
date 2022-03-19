@@ -16,8 +16,11 @@ import FormControl from "@mui/material/FormControl";
 
 import CardHeader from "@mui/material/CardHeader";
 import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 
 import { allUser } from "../actions/auth";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
 
 const ValidationTextField = styled(TextField)({
   "& input:valid + fieldset": {
@@ -46,6 +49,7 @@ const ClassRoomEditForm = (props) => {
     handleChangeSelect,
     handleSubmit,
   } = props;
+  const navigate = useNavigate();
 
   useEffect(() => {
     // console.log(match.params.petitionId);
@@ -66,6 +70,31 @@ const ClassRoomEditForm = (props) => {
     <form onSubmit={handleSubmit}>
       <div
         style={{
+          height: "auto",
+          width: "80%",
+          marginTop: "20px",
+          marginLeft: "220px",
+          marginBottom: "0px",
+          display: "block",
+          justifyContent: "center",
+        }}
+      >
+        <Typography
+          style={{ cursor: "pointer" }}
+          variant="h5"
+          gutterBottom
+          component="div"
+          onClick={() => navigate(`/classRooms`)}
+        >
+          <ArrowBackIcon style={{ fontSize: 50, marginRight: 20 }} />
+          กลับสู่หน้าจัดการชั้นเรียน
+        </Typography>
+        <b>
+          <hr></hr>
+        </b>
+      </div>
+      <div
+        style={{
           display: "flex",
           justifyContent: "center",
           width: "1000px",
@@ -75,7 +104,7 @@ const ClassRoomEditForm = (props) => {
         <Card
           sx={{
             width: "100%",
-            mt: 5,
+            mt: 2,
           }}
         >
           <CardHeader title="แก้ไขชั้นเรียน" subheader="ข้อมูลชั้นเรียน" />
@@ -112,14 +141,15 @@ const ClassRoomEditForm = (props) => {
                       value={teacher}
                     >
                       {allTeacher.map((datateacher, index) => (
-                        <MenuItem key={index} value={datateacher}>
+                        <MenuItem key={index} value={datateacher._id}>
+                          {datateacher.prefix}
                           {datateacher.name} {datateacher.lastname}
                         </MenuItem>
                       ))}
                       <MenuItem
                         disabled
                         hidden
-                        value={teacher}
+                        value={classRoom.teacher}
                         key={teacher._id}
                       >
                         {teacher.name} {teacher.lastname}

@@ -8,6 +8,7 @@ import { allClassRoom } from "../actions/classRooms";
 import { useParams } from "react-router-dom";
 import UserEditForm from "../components/UserEditForm";
 
+
 const UserEdit = () => {
   const match = { params: useParams() };
   // redux
@@ -16,7 +17,7 @@ const UserEdit = () => {
   const { user } = auth;
   //state
   const [allClass, setAllClass] = useState([]);
-  const [openReload, setopenReload] = useState(false);
+  const [selectClassRoom, setSelectClassRoom] = useState("");
   const [values, setValues] = useState({
     name: "",
     studentCard: "",
@@ -67,12 +68,11 @@ const UserEdit = () => {
 
   const loadAllClassRoom = async () => {
     let res = await allClassRoom();
-    console.log("res", res.data);
     setAllClass(res.data);
   };
 
   const loadAllPetitions = async () => {
-    setopenReload(true);
+    console.log("user", match);
     let res = await read(match.params.userId);
     setValues({
       ...values,
@@ -83,21 +83,16 @@ const UserEdit = () => {
         "https://track.thailandpost.co.th/img/No_signature.cdf1fd67.png"
       );
     } else {
-      await setPreviewSignature(
+      setPreviewSignature(
         `${process.env.REACT_APP_API}/user/teacherSignature/${res.data._id}`
       );
     }
-    await setPreview(
-      `${process.env.REACT_APP_API}/user/userImage/${res.data._id}`
-    );
-    setTimeout(() => {
-      setopenReload(false);
-    }, 6000);
+
+    setPreview(`${process.env.REACT_APP_API}/user/userImage/${res.data._id}`);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    var jsonClassRoom = JSON.stringify(classRoom);
     let userData = new FormData();
     userData.append("name", name);
     userData.append("studentCard", studentCard);
@@ -111,7 +106,7 @@ const UserEdit = () => {
     userData.append("status", status);
     userData.append("position", position);
     userData.append("role", role);
-    userData.append("classRoom", jsonClassRoom);
+    userData.append("classRoom", classRoom);
 
     console.log([...userData]);
 
@@ -150,8 +145,6 @@ const UserEdit = () => {
   return (
     <div>
       <UserEditForm
-        setopenReload={setopenReload}
-        openReload={openReload}
         handleSignatureChange={handleSignatureChange}
         password={password}
         values={values}
@@ -168,6 +161,8 @@ const UserEdit = () => {
         setTeacherSignature={setTeacherSignature}
         setAllClass={setAllClass}
         allClass={allClass}
+        selectClassRoom={selectClassRoom}
+        setSelectClassRoom={setSelectClassRoom}
       />
     </div>
   );

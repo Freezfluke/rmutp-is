@@ -1,17 +1,17 @@
 //Materail
 import * as React from "react";
 import AppBar from "@mui/material/AppBar";
+import { useState } from "react";
+import Stack from "@mui/material/Stack";
+import Avatar from "@material-ui/core/Avatar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import CssBaseline from "@mui/material/CssBaseline";
 //React
@@ -28,6 +28,9 @@ const Header = (props) => {
   const { user } = auth;
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [prwview, setPreview] = useState(
+    `${process.env.REACT_APP_API}/user/userImage/${user._id}`
+  );
 
   const logout = () => {
     dispatch({
@@ -47,6 +50,20 @@ const Header = (props) => {
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
   };
+
+  const ImageProfie = () => (
+    <Stack
+      direction="row"
+      spacing={2}
+      sx={{
+        display: "block",
+        mr: 1,
+      }}
+    >
+      {" "}
+      <Avatar src={prwview} sx={{ width: "40px", height: "40px" }} />
+    </Stack>
+  );
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -136,7 +153,18 @@ const Header = (props) => {
               onClick={handleProfileMenuOpen}
               color="inherit"
             >
-              <AccountCircle />
+              {user.image.data === undefined ? (
+                <AccountCircle
+                  style={{ fontSize: "40px", marginRight: "10px" }}
+                />
+              ) : (
+                ImageProfie()
+              )}
+
+              <Typography variant="button" display="block" gutterBottom>
+                {user.prefix}
+                {user.name} {user.lastname} ({user.role})
+              </Typography>
             </IconButton>
           </Box>
           <Box sx={{ display: { xs: "flex", md: "none" } }}>

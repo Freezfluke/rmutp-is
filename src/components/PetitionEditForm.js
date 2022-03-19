@@ -1,25 +1,51 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import Divider from "@mui/material/Divider";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
+import CloseIcon from "@mui/icons-material/Close";
+import Slide from "@mui/material/Slide";
+import SaveIcon from "@mui/icons-material/Save";
+import { DataGrid } from "@mui/x-data-grid";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import TextField from "@mui/material/TextField";
 import { styled } from "@mui/material/styles";
+import AddIcon from "@mui/icons-material/Add";
 import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
 import Fab from "@mui/material/Fab";
 import "./CreatePetition.css";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
+import moment from "moment";
+import Box from "@mui/material/Box";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+import RestoreIcon from "@mui/icons-material/Restore";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import CheckIcon from "@mui/icons-material/Check";
 import DownloadIcon from "@mui/icons-material/Download";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SendIcon from "@mui/icons-material/Send";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const PetitionEditForm = (props) => {
   const {
@@ -46,9 +72,14 @@ const PetitionEditForm = (props) => {
     nameBranchHead,
     setNameBranchHead,
     handleClickStaffApprove,
-    setopenReload,
     openReload,
+    setOpenReload,
+    setOpenModalMessage,
+    openModalMessage,
+    handleCloseOpenModal,
+    handleClickOpenModal,
   } = props;
+
   const {
     petitionName,
     typePetition,
@@ -58,7 +89,9 @@ const PetitionEditForm = (props) => {
     dateAppoveBranchHead,
     comment,
   } = values;
+  const navigate = useNavigate();
 
+  console.log("comment", comment);
   const myArrayDayTeacher = dateAppoveTeacher.split("/");
   const dayTeacher = myArrayDayTeacher[0];
   const monthTeacher = myArrayDayTeacher[1];
@@ -96,6 +129,39 @@ const PetitionEditForm = (props) => {
       padding: "4px !important", // override inline-style
     },
   });
+
+  const NoteCancel = () => (
+    <Dialog
+      open={openModalMessage}
+      onClose={handleCloseOpenModal}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+      fullWidth="lg"
+    >
+      <DialogTitle id="alert-dialog-title">{"หมายเหตุ"}</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          <TextField
+            id="outlined-basic"
+            label="กรุณาระบุเหตุผลที่ไม่อนุมัติ"
+            required
+            variant="outlined"
+            size="lg"
+            fullWidth
+            fontSize="10px"
+            onChange={(e) => setMessage(e.target.value)}
+          />
+        </DialogContentText>
+      </DialogContent>
+
+      <DialogActions>
+        <Button onClick={handleCloseOpenModal}>ยกเลิก</Button>
+        <Button onClick={handleClickCancel} autoFocus>
+          ยืนยัน
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
 
   const petitionDetail = () => (
     <Card sx={{ width: 370 }}>
@@ -162,7 +228,7 @@ const PetitionEditForm = (props) => {
         )}
 
         <hr></hr>
-        {user.role === "อาจารย์" ? (
+        {user.role === "อาจารย์" && status === "แบบคำร้องถูกต้อง" ? (
           <BottomNavigation showLabels>
             <BottomNavigationAction
               label="อนุมัติ"
@@ -170,23 +236,41 @@ const PetitionEditForm = (props) => {
               onClick={handleClickTeachearApprove}
             />
           </BottomNavigation>
-        ) : (
-          <div></div>
-        )}
-        {user.role === "หัวหน้าสาขา" ? (
+        ) : user.role === "อาจารย์" && status === "ที่ปรึกษาอนุมัติแล้ว" ? (
           <BottomNavigation showLabels>
-            <BottomNavigation showLabels>
-              <BottomNavigationAction
-                label="อนุมัติ"
-                icon={<CheckIcon fontSize="large" style={{ color: "green" }} />}
-                onClick={handleClickBranchHeadApprove}
-              />
-            </BottomNavigation>
+            <BottomNavigationAction
+              disabled
+              label="อนุมัติ"
+              icon={<CheckIcon fontSize="large" style={{ color: "gray" }} />}
+              onClick={handleClickTeachearApprove}
+            />
           </BottomNavigation>
         ) : (
-          <div></div>
+          ""
         )}
-        {user.role === "เจ้าหน้าที่สาขา" ? (
+
+        {user.role === "หัวหน้าสาขา" && status === "ที่ปรึกษาอนุมัติแล้ว" ? (
+          <BottomNavigation showLabels>
+            <BottomNavigationAction
+              label="อนุมัติ"
+              icon={<CheckIcon fontSize="large" style={{ color: "green" }} />}
+              onClick={handleClickBranchHeadApprove}
+            />
+          </BottomNavigation>
+        ) : user.role === "หัวหน้าสาขา" &&
+          status === "หัวหน้าสาขาอนุมัติแล้ว" ? (
+          <BottomNavigation showLabels>
+            <BottomNavigationAction
+              label="อนุมัติ"
+              icon={<CheckIcon fontSize="large" style={{ color: "green" }} />}
+              onClick={handleClickBranchHeadApprove}
+            />
+          </BottomNavigation>
+        ) : (
+          ""
+        )}
+        {user.role === "เจ้าหน้าที่สาขา" &&
+        status === "รอเจ้าหน้าที่ตรวจสอบ" ? (
           <BottomNavigation showLabels>
             <BottomNavigationAction
               label="อนุมัติ"
@@ -197,11 +281,29 @@ const PetitionEditForm = (props) => {
             <BottomNavigationAction
               label="ไม่อนุมัติ"
               icon={<CancelIcon fontSize="large" style={{ color: "red" }} />}
-              onClick={handleClickCancel}
+              onClick={handleClickOpenModal}
+            />
+          </BottomNavigation>
+        ) : user.role === "เจ้าหน้าที่สาขา" &&
+          status === "แบบคำร้องไม่ถูกต้อง" ? (
+          <BottomNavigation showLabels>
+            <BottomNavigationAction
+              label="อนุมัติ"
+              icon={<CheckIcon fontSize="large" style={{ color: "green" }} />}
+              onClick={handleClickStaffApprove}
+            />
+          </BottomNavigation>
+        ) : user.role === "เจ้าหน้าที่สาขา" && status === "แบบคำร้องถูกต้อง" ? (
+          <BottomNavigation showLabels>
+            <BottomNavigationAction
+              disabled
+              label="อนุมัติแล้ว"
+              icon={<CheckIcon fontSize="large" style={{ color: "gray" }} />}
+              onClick={handleClickStaffApprove}
             />
           </BottomNavigation>
         ) : (
-          <div></div>
+          ""
         )}
       </CardContent>
     </Card>
@@ -294,20 +396,20 @@ const PetitionEditForm = (props) => {
       <div className="pdf-container">
         <img className="img-pettion" src={prwview} alt="preview_image" />
         <div className="float-sigture">
-          {status === "รอการตรวจสอบ" ? (
+          {status === "รอเจ้าหน้าที่สาขาตรวจสอบ" ? (
             <img className="img-signuture" src="" alt="" />
           ) : (
             <img className="img-signuture" src="" alt="" />
           )}
         </div>
         <div className="float-name">
-          {status === "รอการตรวจสอบ" ? <div></div> : <div></div>}
+          {status === "รอเจ้าหน้าที่สาขาตรวจสอบ" ? <div></div> : <div></div>}
         </div>
         <div className="float-div-checkbox">
-          {status === "รอการตรวจสอบ" ? <div></div> : <div></div>}
+          {status === "รอเจ้าหน้าที่สาขาตรวจสอบ" ? <div></div> : <div></div>}
         </div>
         <div className="float-approve-day0">
-          {status === "รอการตรวจสอบ" ? <div></div> : <div></div>}
+          {status === "รอเจ้าหน้าที่สาขาตรวจสอบ" ? <div></div> : <div></div>}
         </div>
         <div className="float-sigture">
           {status === "ที่ปรึกษาอนุมัติแล้ว" ? (
@@ -439,13 +541,45 @@ const PetitionEditForm = (props) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={openReload}
+      <div
+        style={{
+          height: "auto",
+          width: "80%",
+          marginTop: "20px",
+          marginLeft: "220px",
+          marginBottom: "0px",
+          display: "block",
+          justifyContent: "center",
+        }}
       >
-        {" "}
-        <CircularProgress color="inherit" />
-      </Backdrop>
+        {user.role === "นักศึกษา" ? (
+          <Typography
+            style={{ cursor: "pointer" }}
+            variant="h5"
+            gutterBottom
+            component="div"
+            onClick={() => navigate(`/petition`)}
+          >
+            <ArrowBackIcon style={{ fontSize: 50, marginRight: 20 }} />
+            กลับสู่ยื่นคำร้อง
+          </Typography>
+        ) : (
+          <Typography
+            style={{ cursor: "pointer" }}
+            variant="h5"
+            gutterBottom
+            component="div"
+            onClick={() => navigate(`/petition`)}
+          >
+            <ArrowBackIcon style={{ fontSize: 50, marginRight: 20 }} />
+            กลับสู่หน้าจัดการคำร้อง
+          </Typography>
+        )}
+
+        <b>
+          <hr></hr>
+        </b>
+      </div>
       <div
         style={{
           height: "auto",
@@ -454,6 +588,13 @@ const PetitionEditForm = (props) => {
           display: "flex",
         }}
       >
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={openReload}
+        >
+          {" "}
+          <CircularProgress color="inherit" />
+        </Backdrop>
         <div
           style={{
             height: "auto",
@@ -473,6 +614,7 @@ const PetitionEditForm = (props) => {
         >
           {previewPetition()}
         </div>
+        <div>{NoteCancel()}</div>
       </div>
       <br />
     </form>

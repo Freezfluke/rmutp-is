@@ -19,8 +19,8 @@ import Grid from "@mui/material/Grid";
 import Avatar from "@material-ui/core/Avatar";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
 
 const ValidationTextField = styled(TextField)({
   "& input:valid + fieldset": {
@@ -60,9 +60,12 @@ const UserEditForm = (props) => {
     handleSignatureChange,
     allClass,
     setAllClass,
-    setOpenReload,
-    openReload,
+    setSelectClassRoom,
+    selectClassRoom,
+    handleChangeClassRoom,
   } = props;
+
+  const navigate = useNavigate();
 
   var {
     name,
@@ -179,15 +182,15 @@ const UserEditForm = (props) => {
           label="ห้อง"
           name="classRoom"
           style={{ marginBottom: "10px" }}
-          onChange={handleChangeSelect}
+          onChange={handleChange}
           value={classRoom}
         >
           {allClass.map((teacher, index) => (
-            <MenuItem key={index} value={teacher}>
+            <MenuItem key={index} value={teacher._id}>
               {teacher.classRoom}
             </MenuItem>
           ))}
-          <MenuItem hidden value={classRoom}>
+          <MenuItem hidden value={classRoom._id}>
             {classRoom.classRoom}
           </MenuItem>
         </Select>
@@ -274,24 +277,6 @@ const UserEditForm = (props) => {
         onChange={handleChange}
         fullWidth
       />
-      <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label"> ห้อง</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          label="ห้อง"
-          name="classRoom"
-          style={{ marginBottom: "10px" }}
-          onChange={handleChangeSelect}
-          value={classRoom}
-        >
-          {allClass.map((teacher, index) => (
-            <MenuItem key={index} value={teacher}>
-              {teacher.classRoom}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
     </div>
   );
 
@@ -461,9 +446,36 @@ const UserEditForm = (props) => {
     </div>
   );
 
+  const previewImage = () => (
+    <Stack
+      direction="row"
+      alignItems="center"
+      spacing={2}
+      sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+    >
+      {" "}
+      <Avatar
+        src={prwview}
+        sx={{ width: 240, height: 240, alignItems: "center" }}
+      />
+    </Stack>
+  );
+
   const Input = styled("input")({
     display: "none",
   });
+
+  const BootstrapTooltip = styled(({ className, ...props }) => (
+    <Tooltip {...props} arrow classes={{ popper: className }} />
+  ))(({ theme }) => ({
+    [`& .${tooltipClasses.arrow}`]: {
+      color: theme.palette.common.black,
+    },
+    [`& .${tooltipClasses.tooltip}`]: {
+      backgroundColor: theme.palette.common.black,
+      fontSize: "16px",
+    },
+  }));
 
   const previewPetition = () => (
     <Stack
@@ -506,22 +518,40 @@ const UserEditForm = (props) => {
         style={{
           height: "auto",
           width: "80%",
+          marginTop: "20px",
           marginLeft: "220px",
-          display: "flex",
+          marginBottom: "0px",
+          display: "block",
           justifyContent: "center",
         }}
       >
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={openReload}
+        <Typography
+          style={{ cursor: "pointer" }}
+          variant="h5"
+          gutterBottom
+          component="div"
+          onClick={() => navigate(`/users`)}
         >
-          {" "}
-          <CircularProgress color="inherit" />
-        </Backdrop>
+          <ArrowBackIcon style={{ fontSize: 50, marginRight: 20 }} />
+          กลับสู่หน้าจัดการผู้ใช้งาน
+        </Typography>
+        <b>
+          <hr></hr>
+        </b>
+      </div>
+      <div
+        style={{
+          height: "auto",
+          width: "80%",
+          marginLeft: "220px",
+          display: "flex",
+          justifyContent: "center",
+          mt: 2,
+        }}
+      >
         <Card
           sx={{
             width: "90%",
-            mt: 3,
           }}
         >
           <CardHeader title="แก้ไขบัญชีผู้ใช้" subheader="ข้อมูลส่วนบุคคล" />

@@ -25,11 +25,16 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { allUser, deleteUser } from "../actions/auth";
+import { allUser, deleteUser, read } from "../actions/auth";
+import { allClassRoom, readClassroom } from "../actions/classRooms.js";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import Avatar from "@mui/material/Avatar";
+import { red } from "@mui/material/colors";
+import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 import PersonIcon from "@mui/icons-material/Person";
@@ -97,7 +102,9 @@ const BootstrapTooltip = styled(({ className, ...props }) => (
 
 const UsersList = () => {
   const [open, setOpen] = useState(false);
+  const [openReload, setOpenReload] = useState(false);
   const [alluser, setAlluser] = useState([]);
+  const [allclassRoom, setAllclassRoom] = useState([]);
   const [allTeacher, setAllTeacher] = useState([]);
   const [allStudent, setAllStudent] = useState([]);
   const { auth } = useSelector((state) => ({ ...state }));
@@ -105,7 +112,6 @@ const UsersList = () => {
   const [postsPerPage, setPostsPerPage] = useState(10);
   const [statusTab, setStatusTab] = useState("");
   const [searchName, setSearchName] = useState("");
-  const [openReload, setOpenReload] = useState(false);
 
   // const { user } = auth;
   const [owner, setOwner] = useState(false);
@@ -204,31 +210,61 @@ const UsersList = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   useEffect(() => {
-    loadAllPetitions();
+    loadAllUsers();
   }, []);
 
   const handleUserDelete = async (userId) => {
     if (!window.confirm("คุณแน่ใจว่าจะลบแบบคำร้องนี้ใช่หรือไม่?")) return;
     deleteUser(auth.token, userId).then((res) => {
       toast.success("ผู้ใช้งานถูกลบเรียบร้อยแล้ว");
-      loadAllPetitions();
+      loadAllUsers();
     });
   };
 
-  const loadAllPetitions = async () => {
+  const loadAllUsers = async () => {
     setOpenReload(true);
-    let res = await allUser();
-    console.log("res", res);
-    setAlluser(res.data);
-    let resTeacher = await res.data.filter((e) => {
-      return e.role === "อาจารย์";
+    var setupUsers = [];
+    let resUsers = await allUser();
+    let resClassRoom = await allClassRoom();
+    let desResUsers = [...resUsers.data];
+    let desResRoom = [...resClassRoom.data];
+    desResUsers.map(async (user) => {
+      let _itemTeacher = await desResRoom.filter((e) => {
+        return user._id === e.teacher;
+      })[0];
+      let _itemStudent = await desResRoom.filter((e) => {
+        return user.classRoom === e._id;
+      })[0];
+      let ReloadItemTeacher = await _itemTeacher;
+      let ReloadItemStudent = await _itemStudent;
+      console.log("ReloadItemStudent", ReloadItemStudent);
+      console.log("reloadItem", ReloadItemTeacher);
+      setupUsers.push({
+        _id: user._id,
+        email: user.email,
+        studentCard: user.studentCard ? user.studentCard : "",
+        password: user.password,
+        name: user.name,
+        lastname: user.lastname,
+        mobile: user.mobile,
+        role: user.role,
+        prefix: user.prefix,
+        class: user.classRoom ? ReloadItemStudent : ReloadItemTeacher,
+      });
+      let ReloadAlluser = await setupUsers.filter((e) => {
+        return e;
+      });
+      setAlluser(ReloadAlluser);
+      let resTeacher = await ReloadAlluser.filter((e) => {
+        return e.role === "อาจารย์";
+      });
+      setAllTeacher(resTeacher);
+      let resStudent = await ReloadAlluser.filter((e) => {
+        return e.role === "นักศึกษา";
+      });
+      setAllStudent(resStudent);
+      setOpenReload(false);
     });
-    setAllTeacher(resTeacher);
-    let resStudent = await res.data.filter((e) => {
-      return e.role === "นักศึกษา";
-    });
-    setAllStudent(resStudent);
-    setOpenReload(false);
   };
 
   const handleClickOpen = () => {
@@ -295,7 +331,7 @@ const UsersList = () => {
             <TableHead>
               <TableRow>
                 <TableCell colSpan={2}>
-                  <Div>{"ตารางแสดงผู้ใช้งานทั้งหมด"}</Div>
+                  <Div>{"ตารางแสดงผู้ใช้งาน"}</Div>
                 </TableCell>
                 <TableCell colSpan={1}>
                   <FormControl fullWidth>
@@ -320,7 +356,7 @@ const UsersList = () => {
                     </Select>
                   </FormControl>
                 </TableCell>
-                <TableCell colSpan={2}>
+                <TableCell colSpan={1}>
                   <Search>
                     <SearchIconWrapper>
                       <SearchIcon />
@@ -336,7 +372,7 @@ const UsersList = () => {
                 </TableCell>
                 <TableCell colSpan={1} align="right">
                   <BootstrapTooltip
-                    title="เพิ่มแบบคำร้อง"
+                    title="เพิ่มผู้ใช้งาน"
                     onClick={handleClickOpen}
                   >
                     <Fab color="primary" aria-label="add">
@@ -356,7 +392,7 @@ const UsersList = () => {
                   ตำแหน่ง
                 </TableCell>
                 <TableCell width={200} align="center">
-                  ห้อง/ระดับชั้น
+                  ชั้นเรียน
                 </TableCell>
 
                 <TableCell width={120} align="center">
@@ -401,11 +437,7 @@ const UsersList = () => {
                     </TableCell>
                     <TableCell align="center">{user.role}</TableCell>
                     <TableCell align="center">
-                      {user.classRoom.classRoom ? (
-                        <p>{user.classRoom.classRoom}</p>
-                      ) : (
-                        "-"
-                      )}
+                      {user.class ? <span>{user.class.classRoom}</span> : "-"}
                     </TableCell>
 
                     <TableCell align="right">
@@ -416,18 +448,18 @@ const UsersList = () => {
                       >
                         <IconButton
                           sx={{ color: "orange" }}
-                          aria-label="delete"
+                          aria-label="edit"
                           onClick={() => navigate(`/users/edit/${user._id}`)}
                         >
                           <EditIcon sx={{ fontSize: 30 }} />
                         </IconButton>
-                        <IconButton
+                        {/* <IconButton
                           sx={{ color: "red" }}
                           aria-label="delete"
                           onClick={() => handleUserDelete(user._id)}
                         >
                           <DeleteIcon sx={{ fontSize: 30 }} />
-                        </IconButton>
+                        </IconButton> */}
                       </Stack>
                     </TableCell>
                   </TableRow>

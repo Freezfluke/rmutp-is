@@ -5,10 +5,14 @@ import { saveAs } from "file-saver";
 import axios from "axios";
 import "../components/CreatePetition.css";
 import moment from "moment";
+
 import { useSelector } from "react-redux";
-import { read, updatePetition } from "../actions/petitions";
+import { allPetitions, read, updatePetition } from "../actions/petitions";
 import { useParams } from "react-router-dom";
 import PetitionEditForm from "../components/PetitionEditForm";
+import { allUser, deleteUser } from "../actions/auth";
+import { allClassRoom, readClassroom } from "../actions/classRooms.js";
+import { checkboxClasses } from "@mui/material";
 
 const DetailPetition = () => {
   const match = { params: useParams() };
@@ -16,11 +20,11 @@ const DetailPetition = () => {
   const { auth } = useSelector((state) => ({ ...state }));
   const [nameTeacher, setNameTeacher] = useState("");
   const [nameBranchHead, setNameBranchHead] = useState("");
+  const [openReload, setOpenReload] = useState(false);
+  const [openModalMessage, setOpenModalMessage] = useState(false);
   const [message, setMessage] = useState("");
-  const [openReload, setopenReload] = useState(false);
   const { token } = auth;
   const { user } = auth;
-
   //state
   const [values, setValues] = useState({
     typePetition: "",
@@ -50,6 +54,7 @@ const DetailPetition = () => {
     status,
     email,
     from,
+    comment,
   } = values;
 
   useEffect(() => {
@@ -57,34 +62,88 @@ const DetailPetition = () => {
     loadAllPetitions();
   }, []);
 
+  const handleClickOpenModal = () => {
+    setOpenModalMessage(true);
+  };
+
+  const handleCloseOpenModal = () => {
+    setOpenModalMessage(false);
+  };
+
   const loadAllPetitions = async () => {
-    setopenReload(true);
+    setOpenReload(true);
+    let setupPetitions = [];
     let res = await read(match.params.petitionId);
-    await setValues({ ...values, ...res.data });
-    await setNameTeacher(
-      `${res.data.teacher.teacher.prefix}${res.data.teacher.teacher.name} ${res.data.teacher.teacher.lastname}`
+    console.log("res", res);
+    setValues({ ...values, ...res.data });
+    let resPetitions = await allPetitions();
+    let resUsers = await allUser();
+    let resClassRoom = await allClassRoom();
+    let desPetitions = [...resPetitions.data];
+    let desUsers = [...resUsers.data];
+    let desClassroom = [...resClassRoom.data];
+    let petitionDetail = await desPetitions.filter((e) => {
+      return e._id === match.params.petitionId;
+    })[0];
+    console.log("petitionDetail", petitionDetail);
+    let petitionUser = await desUsers.filter((e) => {
+      return e._id === petitionDetail.from;
+    })[0];
+    console.log("petitionUser", petitionUser);
+    let petitionClassRoom = await desClassroom.filter((e) => {
+      return e._id === petitionUser.classRoom;
+    })[0];
+    console.log("petitionClassRoom", petitionClassRoom);
+    let petitionTeacher = await desUsers.filter((e) => {
+      return petitionClassRoom.teacher === e._id;
+    })[0];
+    let petitionBranchHead = await desUsers.filter((e) => {
+      return e.role === "หัวหน้าสาขา";
+    })[0];
+    console.log("petitionTeacher", petitionTeacher);
+    setupPetitions.push({
+      _id: petitionDetail._id,
+      email: petitionDetail.email,
+      typePetition: petitionDetail.typePetition,
+      petitionName: petitionDetail.petitionName,
+      dateAppoveTeacher: petitionDetail.dateAppoveTeacher,
+      dateAppoveBranchHead: petitionDetail.dateAppoveBranchHead,
+      from: petitionUser,
+      branchHead: petitionBranchHead,
+      class: petitionClassRoom,
+      teacher: petitionTeacher,
+      status: petitionDetail.status,
+      petitionImage: petitionDetail.petitionImage,
+      comment: petitionDetail.comment,
+      createdAt: petitionDetail.createdAt,
+      updatedAt: petitionDetail.updatedAt,
+      __v: petitionDetail.__v,
+    });
+    console.log("setupPetitions", setupPetitions[0]);
+    setNameTeacher(
+      `${setupPetitions[0].teacher.prefix}${setupPetitions[0].teacher.name} ${setupPetitions[0].teacher.lastname}`
     );
-    await setNameBranchHead(
-      `${res.data.branchHead.prefix}${res.data.branchHead.name} ${res.data.branchHead.lastname}`
+
+    setNameBranchHead(
+      `${setupPetitions[0].branchHead.prefix}${setupPetitions[0].branchHead.name} ${setupPetitions[0].branchHead.lastname}`
     );
-    await setPreview(
+    setPreview(
       `${process.env.REACT_APP_API}/petition/petitionImage/${res.data._id}`
     );
 
-    await setSignatureTeacher(
-      `${process.env.REACT_APP_API}/user/teacherSignature/${res.data.teacher.teacher._id}`
+    setSignatureTeacher(
+      `${process.env.REACT_APP_API}/user/teacherSignature/${setupPetitions[0].teacher._id}`
     );
-    await setSignatureBranchHead(
-      `${process.env.REACT_APP_API}/user/teacherSignature/${res.data.branchHead._id}`
+    setSignatureBranchHead(
+      `${process.env.REACT_APP_API}/user/teacherSignature/${setupPetitions[0].branchHead._id}`
     );
-    setTimeout(() => {
-      setopenReload(false);
-    }, 10000);
+    setOpenReload(false);
   };
 
   const handleCreateAndDownloadPdf = async (e) => {
     e.preventDefault();
-    if (status === "รอการตรวจสอบ") {
+
+    if (status === "รอเจ้าหน้าที่ตรวจสอบ") {
       var imageSignatureTeacher = "";
       var imagePetition = prwview;
       var fullnameTeacher = "";
@@ -105,8 +164,9 @@ const DetailPetition = () => {
     if (status === "ที่ปรึกษาอนุมัติแล้ว") {
       var imageSignatureTeacher = signatureTeacher;
       var imagePetition = prwview;
-      var fullnameTeacher = `${teacher.teacher.prefix}${teacher.teacher.name} ${teacher.teacher.lastname}`;
+      var fullnameTeacher = `${nameTeacher}`;
       var dateAppoveTeacher = values.dateAppoveTeacher;
+
       var dateAppoveBranchHead = "";
       var imageSignatureBranchhead = "";
       var fullnameBranchhead = "";
@@ -114,11 +174,11 @@ const DetailPetition = () => {
     if (status === "หัวหน้าสาขาอนุมัติแล้ว") {
       var imageSignatureTeacher = signatureTeacher;
       var imagePetition = prwview;
-      var fullnameTeacher = `${teacher.teacher.prefix}${teacher.teacher.name} ${teacher.teacher.lastname}`;
+      var fullnameTeacher = `${nameTeacher}`;
       var imageSignatureBranchhead = signatureBranchHead;
       var dateAppoveTeacher = values.dateAppoveTeacher;
       var dateAppoveBranchHead = values.dateAppoveBranchHead;
-      var fullnameBranchhead = `${branchHead.prefix}${branchHead.name} ${branchHead.lastname}`;
+      var fullnameBranchhead = `${nameBranchHead}`;
     }
 
     axios
@@ -146,10 +206,19 @@ const DetailPetition = () => {
 
   const handleClickCancel = async (e) => {
     e.preventDefault();
-    let teacherApproveDate = "";
-    let branchHeadApproveDate = "";
-    let updateStatus = "แบบคำร้องไม่ถูกต้อง";
-    handleSubmit(updateStatus, teacherApproveDate, branchHeadApproveDate);
+    console.log("message", message);
+    if (message === null || message === "" || message === " ") {
+      toast.error("กรุณาระบุเหตุผลที่ไม่อนุมัติ");
+    } else {
+      let teacherApproveDate = "";
+      let branchHeadApproveDate = "";
+      let updateStatus = "แบบคำร้องไม่ถูกต้อง";
+      handleSubmitCancel(
+        updateStatus,
+        teacherApproveDate,
+        branchHeadApproveDate
+      );
+    }
   };
 
   const handleClickStaffApprove = async (e) => {
@@ -179,24 +248,26 @@ const DetailPetition = () => {
   const handleComment = async (e) => {
     e.preventDefault();
     let oldComment = [];
+    console.log("message", message);
+
     let newComment = {
       messge: message,
       fullname: `${user.prefix}${user.name} ${user.lastname}`,
     };
+    console.log("NewComment", newComment);
     oldComment.push(...values.comment, newComment);
     let petitionData = new FormData();
-    let jsonFrom = JSON.stringify(from);
-    let jsonTeacher = JSON.stringify(teacher);
-    let jsonbranchHead = JSON.stringify(branchHead);
+    // let jsonFrom = JSON.stringify(from);
+    // let jsonTeacher = JSON.stringify(teacher);
+    // let jsonbranchHead = JSON.stringify(branchHead);
     let jsonoldComment = JSON.stringify(oldComment);
     petitionData.append("typePetition", typePetition);
     petitionData.append("email", email);
     petitionData.append("petitionName", petitionName);
     petitionImage && petitionData.append("petitionImage", petitionImage);
     petitionData.append("status", values.status);
-    petitionData.append("branchHead", jsonbranchHead);
-    petitionData.append("from", jsonFrom);
-    petitionData.append("teacher", jsonTeacher);
+    petitionData.append("branchHead", branchHead);
+    petitionData.append("from", from);
     petitionData.append("dateAppoveTeacher", values.dateAppoveTeacher);
     petitionData.append("dateAppoveBranchHead", values.dateAppoveBranchHead);
     petitionData.append("comment", jsonoldComment);
@@ -211,14 +282,14 @@ const DetailPetition = () => {
       toast.success(`โพสต์แสดงความคิดเห็นเรียบร้อยแล้ว`);
       setTimeout(() => {
         window.location.reload();
-      }, 3000);
+      }, 1500);
     } catch (err) {
       console.log(err);
       toast.error(err.response.data.err);
     }
   };
 
-  const handleSubmit = async (
+  const handleSubmitCancel = async (
     updateStatus,
     teacherApproveDate,
     dateApproveBranchHead
@@ -226,10 +297,17 @@ const DetailPetition = () => {
     let dateAppoveTeacher = teacherApproveDate;
     let dateAppoveBranchHead = teacherApproveDate;
     console.log("dateApproveBranchHead", dateAppoveBranchHead);
-    let jsonFrom = JSON.stringify(from);
-    let jsonTeacher = JSON.stringify(teacher);
-    let jsonbranchHead = JSON.stringify(branchHead);
-    let jsonoldComment = JSON.stringify(values.comment);
+    let oldComment = [];
+    // let jsonFrom = JSON.stringify(from);
+    // let jsonTeacher = JSON.stringify(teacher);
+    // let jsonbranchHead = JSON.stringify(branchHead);
+    let newComment = {
+      messge: message,
+      fullname: `${user.prefix}${user.name} ${user.lastname}`,
+    };
+    console.log("NewComment", newComment);
+    oldComment.push(...values.comment, newComment);
+    let jsonoldComment = JSON.stringify(oldComment);
 
     let petitionData = new FormData();
     petitionData.append("typePetition", typePetition);
@@ -237,9 +315,8 @@ const DetailPetition = () => {
     petitionData.append("petitionName", petitionName);
     petitionImage && petitionData.append("petitionImage", petitionImage);
     petitionData.append("status", updateStatus);
-    petitionData.append("branchHead", jsonbranchHead);
-    petitionData.append("from", jsonFrom);
-    petitionData.append("teacher", jsonTeacher);
+    petitionData.append("branchHead", branchHead);
+    petitionData.append("from", from);
     petitionData.append("dateAppoveTeacher", dateAppoveTeacher);
     petitionData.append("dateAppoveBranchHead", dateAppoveBranchHead);
     petitionData.append("comment", jsonoldComment);
@@ -258,8 +335,57 @@ const DetailPetition = () => {
         window.location.reload();
       }, 3000);
     } catch (err) {
-      console.log(err);
-      toast.error(err.response.data.err);
+      if (err.response.status === 400) {
+        toast.error(err.response.data);
+        // setOpen(false);
+      }
+    }
+  };
+
+  const handleSubmit = async (
+    updateStatus,
+    teacherApproveDate,
+    dateApproveBranchHead
+  ) => {
+    let dateAppoveTeacher = teacherApproveDate;
+    let dateAppoveBranchHead = teacherApproveDate;
+    console.log("dateApproveBranchHead", dateAppoveBranchHead);
+    // let jsonFrom = JSON.stringify(from);
+    // let jsonTeacher = JSON.stringify(teacher);
+    // let jsonbranchHead = JSON.stringify(branchHead);
+
+    let jsonoldComment = JSON.stringify(values.comment);
+
+    let petitionData = new FormData();
+    petitionData.append("typePetition", typePetition);
+    petitionData.append("email", email);
+    petitionData.append("petitionName", petitionName);
+    petitionImage && petitionData.append("petitionImage", petitionImage);
+    petitionData.append("status", updateStatus);
+    petitionData.append("branchHead", branchHead);
+    petitionData.append("from", from);
+    petitionData.append("dateAppoveTeacher", dateAppoveTeacher);
+    petitionData.append("dateAppoveBranchHead", dateAppoveBranchHead);
+    petitionData.append("comment", jsonoldComment);
+    console.log([...petitionData]);
+    try {
+      let res = await updatePetition(
+        token,
+        petitionData,
+        match.params.petitionId
+      );
+      console.log("Update Petition", res);
+      toast.success(
+        `แบบคำร้องนี้ ${res.data.petitionName} ถูกอัพเดตเรียบร้อยแล้ว`
+      );
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    } catch (err) {
+      if (err.response.status === 400) {
+        toast.error(err.response.data);
+        // setOpen(false);
+      }
     }
   };
 
@@ -281,8 +407,6 @@ const DetailPetition = () => {
   return (
     <div>
       <PetitionEditForm
-        setopenReload={setopenReload}
-        openReload={openReload}
         handleClickCancel={handleClickCancel}
         handleComment={handleComment}
         message={message}
@@ -307,6 +431,12 @@ const DetailPetition = () => {
         setNameBranchHead={setNameBranchHead}
         nameBranchHead={nameBranchHead}
         handleCreateAndDownloadPdf={handleCreateAndDownloadPdf}
+        openReload={openReload}
+        setOpenReload={setOpenReload}
+        openModalMessage={openModalMessage}
+        setOpenModalMessage={setOpenModalMessage}
+        handleClickOpenModal={handleClickOpenModal}
+        handleCloseOpenModal={handleCloseOpenModal}
       />
     </div>
   );

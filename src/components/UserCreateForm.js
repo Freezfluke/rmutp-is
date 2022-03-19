@@ -66,6 +66,9 @@ const UserCreateForm = (props) => {
     handleChangeSelect,
     allClass,
     setAllClass,
+    setSelectClassRoom,
+    selectClassRoom,
+    handleChangeClassRoom,
   } = props;
 
   const {
@@ -196,11 +199,11 @@ const UserCreateForm = (props) => {
           label="ห้อง"
           name="classRoom"
           style={{ marginBottom: "10px" }}
-          onChange={handleChangeSelect}
-          value={classRoom}
+          onChange={handleChangeClassRoom}
+          value={selectClassRoom}
         >
           {allClass.map((teacher, index) => (
-            <MenuItem key={index} value={teacher}>
+            <MenuItem key={index} value={teacher._id}>
               {teacher.classRoom}
             </MenuItem>
           ))}
@@ -256,7 +259,7 @@ const UserCreateForm = (props) => {
           <MenuItem value="นาง">
             <em>นาง</em>
           </MenuItem>
-          <MenuItem value="ผศ.ดร">
+          <MenuItem value="ผศ.ดร.">
             <em>ผศ.ดร.</em>
           </MenuItem>
           <MenuItem value="ดร.">
@@ -300,24 +303,6 @@ const UserCreateForm = (props) => {
         onChange={handleChange}
         fullWidth
       />
-      <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label"> ห้อง</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          label="ห้อง"
-          name="classRoom"
-          style={{ marginBottom: "10px" }}
-          onChange={handleChangeSelect}
-          value={classRoom}
-        >
-          {allClass.map((teacher, index) => (
-            <MenuItem key={index} value={teacher}>
-              {teacher.classRoom}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
     </div>
   );
 
@@ -368,7 +353,7 @@ const UserCreateForm = (props) => {
           <MenuItem value="นาง">
             <em>นาง</em>
           </MenuItem>
-          <MenuItem value="ผศ.ดร">
+          <MenuItem value="ผศ.ดร.">
             <em>ผศ.ดร.</em>
           </MenuItem>
           <MenuItem value="ดร.">
@@ -463,7 +448,7 @@ const UserCreateForm = (props) => {
           <MenuItem value="นาง">
             <em>นาง</em>
           </MenuItem>
-          <MenuItem value="ผศ.ดร">
+          <MenuItem value="ผศ.ดร.">
             <em>ผศ.ดร.</em>
           </MenuItem>
           <MenuItem value="ดร.">

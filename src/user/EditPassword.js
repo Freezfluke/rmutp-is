@@ -90,7 +90,6 @@ const EditPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    var jsonClassRoom = JSON.stringify(classRoom);
     let userData = new FormData();
     userData.append("name", name);
     userData.append("studentCard", studentCard);
@@ -104,7 +103,7 @@ const EditPassword = () => {
     userData.append("status", status);
     userData.append("position", position);
     userData.append("role", role);
-    userData.append("classRoom", jsonClassRoom);
+    userData.append("classRoom", classRoom);
 
     console.log([...userData]);
 

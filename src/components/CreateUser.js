@@ -15,8 +15,8 @@ import UserCreateForm from "./UserCreateForm";
 
 const CreateUser = (props) => {
   const [open, setOpen] = useState(props.open);
-
   const [allClass, setAllClass] = useState([0]);
+  const [selectClassRoom, setSelectClassRoom] = useState("");
   const [values, setValues] = useState({
     email: "",
     name: "",
@@ -31,7 +31,6 @@ const CreateUser = (props) => {
     },
     prefix: "",
     status: "",
-    classRoom: "",
   });
   const navigate = useNavigate();
 
@@ -79,6 +78,10 @@ const CreateUser = (props) => {
     setValues({ ...values, image: e.target.files[0] });
   };
 
+  const handleChangeClassRoom = async (e) => {
+    setSelectClassRoom(e.target.value);
+  };
+
   const handleChangeSelect = async (e) => {
     setValues({
       ...values,
@@ -88,8 +91,6 @@ const CreateUser = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    var jsonClassRoom = JSON.stringify(classRoom);
-    // console.log(values);
     let userData = new FormData();
     userData.append("email", email);
     userData.append("studentCard", studentCard);
@@ -102,7 +103,7 @@ const CreateUser = (props) => {
     userData.append("role", role);
     teacherSignature && userData.append("teacherSignature", teacherSignature);
     userData.append("prefix", prefix);
-    userData.append("classRoom", jsonClassRoom);
+    userData.append("classRoom", selectClassRoom);
 
     console.log([...userData]);
     try {
@@ -130,7 +131,10 @@ const CreateUser = (props) => {
         }}
       >
         <UserCreateForm
+          handleChangeClassRoom={handleChangeClassRoom}
           handleSubmit={handleSubmit}
+          selectlassRoom={selectClassRoom}
+          setSelectClassRoom={setSelectClassRoom}
           values={values}
           setValues={setValues}
           open={props.open}

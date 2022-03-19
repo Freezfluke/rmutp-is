@@ -176,20 +176,20 @@ const UserProfileForm = (props) => {
         <InputLabel id="demo-simple-select-label"> ห้อง</InputLabel>
         <Select
           labelId="demo-simple-select-label"
+          disabled
           id="demo-simple-select"
           label="ห้อง"
           name="classRoom"
           style={{ marginBottom: "10px" }}
-          onChange={handleChangeSelect}
+          onChange={handleChange}
           value={classRoom}
-          disabled
         >
           {allClass.map((teacher, index) => (
-            <MenuItem key={index} value={teacher}>
+            <MenuItem key={index} value={teacher._id}>
               {teacher.classRoom}
             </MenuItem>
           ))}
-          <MenuItem hidden value={classRoom}>
+          <MenuItem hidden value={classRoom._id}>
             {classRoom.classRoom}
           </MenuItem>
         </Select>

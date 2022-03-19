@@ -142,10 +142,11 @@ const CreateClassRoomForm = (props) => {
                         name="teacher"
                         style={{ marginBottom: "10px" }}
                         onChange={handleChangeSelect}
-                        value={teacher}
+                        value={teacher._id}
                       >
                         {allTeacher.map((teacher) => (
-                          <MenuItem key={teacher} value={teacher}>
+                          <MenuItem key={teacher._id} value={teacher._id}>
+                            {teacher.prefix}
                             {teacher.name} {teacher.lastname}
                           </MenuItem>
                         ))}

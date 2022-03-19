@@ -21,13 +21,13 @@ const CreatePetition = (props) => {
     typePetition: "",
     petitionName: "",
     petitionImage: "",
-    teacher: "",
     branchHead: "",
     dateAppoveBranchHead: "",
     dateAppoveTeacher: "",
     status: "",
     email: "",
     from: "",
+    classRoom: "",
   });
 
   const [prwview, setPreview] = useState(
@@ -43,7 +43,7 @@ const CreatePetition = (props) => {
     typePetition,
     petitionName,
     petitionImage,
-    teacher,
+    classRoom,
     branchHead,
     status,
     email,
@@ -62,34 +62,35 @@ const CreatePetition = (props) => {
     let student = res.data.filter((studentData) => {
       return studentData.email === user.email;
     });
+
     let branchHead = res.data.filter((branchHeadData) => {
       return branchHeadData.role === "หัวหน้าสาขา";
     });
-    console.log("student", student);
+    console.log("branchHead", branchHead[0]);
+    console.log("student", student[0]);
     setValues({
       ...values,
-      from: student[0],
-      teacher: student[0].classRoom,
-      branchHead: branchHead[0],
+      from: student[0]._id,
+      classRoom: student[0].classRoom,
+      branchHead: branchHead[0]._id,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log(values);
-    let jsonFrom = JSON.stringify(from);
-    let jsonTeacher = JSON.stringify(teacher);
-    let jsonbranchHead = JSON.stringify(branchHead);
+    // let jsonFrom = JSON.stringify(from);
+    // let jsonTeacher = JSON.stringify(teacher);
+    // let jsonbranchHead = JSON.stringify(branchHead);
     let pettionData = new FormData();
     pettionData.append("typePetition", typePetition);
     pettionData.append("email", email);
     pettionData.append("petitionName", petitionName);
     petitionImage && pettionData.append("petitionImage", petitionImage);
-    pettionData.append("teacher", teacher);
     pettionData.append("status", status);
-    pettionData.append("branchHead", jsonbranchHead);
-    pettionData.append("from", jsonFrom);
-    pettionData.append("teacher", jsonTeacher);
+    pettionData.append("branchHead", branchHead);
+    pettionData.append("from", from);
+    pettionData.append("classRoom", classRoom);
     pettionData.append("dateAppoveBranchHead", dateAppoveBranchHead);
     pettionData.append("dateAppoveTeacher", dateAppoveTeacher);
 
@@ -100,7 +101,7 @@ const CreatePetition = (props) => {
       toast.success("สร้างแบบคำร้องเรียบร้อยแล้ว");
       setTimeout(() => {
         window.location.reload();
-      }, 1000);
+      }, 3000);
     } catch (err) {
       if (err.response.status === 400) {
         console.log(err);
@@ -121,7 +122,7 @@ const CreatePetition = (props) => {
       typePetition: e.target.value,
       petitionName: e.target.value,
       email: user.email,
-      status: "รอการตรวจสอบ",
+      status: "รอเจ้าหน้าที่ตรวจสอบ",
     });
   };
 

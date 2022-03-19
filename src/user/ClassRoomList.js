@@ -22,7 +22,7 @@ import SearchIcon from "@mui/icons-material/Search";
 //import getallapiPetitions
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { allUser } from "../actions/auth.js";
+import { allUser, read } from "../actions/auth.js";
 import { allClassRoom, deleteClassRoom } from "../actions/classRooms.js";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -124,7 +124,7 @@ const ClassRoom = () => {
     <Card sx={{ minWidth: "auto" }}>
       <CardContent>
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          ห้องทั้งหมด
+          จำนวนชั้นเรียนทั้งหมด
         </Typography>
         <Typography
           style={{ display: "flex", justifyContent: "space-between" }}
@@ -149,26 +149,44 @@ const ClassRoom = () => {
 
   const loadAllTeacher = async () => {
     setOpenReload(true);
-    let res = await allUser();
+    var setupclassRoom = [];
+    let resUser = await allUser();
     let resRoom = await allClassRoom();
     let allresRoom = [...resRoom.data];
-    console.log("res", res);
-
-    let teacher = await res.data.filter((teacher) => {
+    let allresUser = [...resUser.data];
+    let teacher = await resUser.data.filter((teacher) => {
       return teacher.role === "อาจารย์";
     });
     console.log("teacher", teacher);
     setAllTeacher(teacher);
-    let allTeacher = [...teacher];
-    await allTeacher.map(async (data) => {
-      let dataTeacher;
-      dataTeacher = await allresRoom.filter((dataTeacher) => {
-        return data.teacher === dataTeacher.email;
+    allresRoom.map(async (room) => {
+      let res = await read(room.teacher);
+      setupclassRoom.push({
+        _id: room._id,
+        email: res.data.email,
+        name: res.data.name,
+        lastname: res.data.lastname,
+        mobile: res.data.mobile,
+        prefix: res.data.prefix,
+        classRoom: room.classRoom,
       });
-      setAllclassRoom(dataTeacher);
-      console.log(dataTeacher);
+      console.log(allclassRoom);
+      let dataRoomtotal = await setupclassRoom.filter((dataRoom) => {
+        return dataRoom;
+      });
+      setAllclassRoom(dataRoomtotal);
+      setOpenReload(false);
     });
-    setOpenReload(false);
+
+    // let allTeacher = [...teacher];
+    // await allTeacher.map(async (data) => {
+    //   let dataTeacher;
+    //   dataTeacher = await allresRoom.filter((dataTeacher) => {
+    //     return data.teacher === dataTeacher.email;
+    //   });
+    //   setAllclassRoom(dataTeacher);
+    //   console.log(dataTeacher);
+    // });
   };
 
   const handleClickOpen = () => {
@@ -179,13 +197,13 @@ const ClassRoom = () => {
     setOpen(false);
   };
 
-  const handleClasRoomDelete = async (classRoomId) => {
-    if (!window.confirm("คุณแน่ใจว่าจะลบชั้นเรียนนี้ใช่หรือไม่?")) return;
-    deleteClassRoom(auth.token, classRoomId).then((res) => {
-      toast.success("ชั้นเรียนถูกลบเรียบร้อยแล้ว");
-      loadAllTeacher();
-    });
-  };
+  // const handleClasRoomDelete = async (classRoomId) => {
+  //   if (!window.confirm("คุณแน่ใจว่าจะลบชั้นเรียนนี้ใช่หรือไม่?")) return;
+  //   deleteClassRoom(auth.token, classRoomId).then((res) => {
+  //     toast.success("ชั้นเรียนถูกลบเรียบร้อยแล้ว");
+  //     loadAllTeacher();
+  //   });
+  // };
 
   return (
     <>
@@ -227,16 +245,16 @@ const ClassRoom = () => {
             <TableHead>
               <TableRow>
                 <TableCell colSpan={2}>
-                  <Div>{"ตารางแสดงห้องเรียนทั้งหมด"}</Div>
+                  <Div>{"ตารางแสดงชั้นเรียน"}</Div>
                 </TableCell>
 
-                <TableCell colSpan={2}>
+                <TableCell colSpan={1}>
                   <Search>
                     <SearchIconWrapper>
                       <SearchIcon />
                     </SearchIconWrapper>
                     <StyledInputBase
-                      placeholder="ค้นหาชื่อห้องระดับชั้น"
+                      placeholder="ค้นหาชั้นเรียน"
                       inputProps={{ "aria-label": "search" }}
                       onChange={(event) => {
                         setSearchClassRoom(event.target.value);
@@ -246,7 +264,7 @@ const ClassRoom = () => {
                 </TableCell>
                 <TableCell colSpan={1} align="right">
                   <BootstrapTooltip
-                    title="เพิ่มแบบคำร้อง"
+                    title="เพิ่มชั้นเรียน"
                     onClick={handleClickOpen}
                   >
                     <Fab color="primary" aria-label="add">
@@ -261,7 +279,7 @@ const ClassRoom = () => {
                 </TableCell>
 
                 <TableCell width={800} align="center">
-                  ห้อง/ระดับชั้น
+                  ชั้นเรียน
                 </TableCell>
                 <TableCell width={800} align="center">
                   อาจารย์ประจำชั้น
@@ -295,12 +313,10 @@ const ClassRoom = () => {
                       {++index}
                     </TableCell>
                     <TableCell align="center">{classRoom.classRoom}</TableCell>
-
                     <TableCell align="center">
-                      {classRoom.teacher.prefix} {classRoom.teacher.name}{" "}
-                      {classRoom.teacher.lastname}
+                      {classRoom.prefix}
+                      {classRoom.name} {classRoom.lastname}
                     </TableCell>
-
                     <TableCell align="right">
                       <Stack
                         direction="row"
@@ -315,13 +331,13 @@ const ClassRoom = () => {
                         >
                           <EditIcon sx={{ fontSize: 30 }} />
                         </IconButton>
-                        <IconButton
+                        {/* <IconButton
                           sx={{ color: "red" }}
                           aria-label="delete"
                           onClick={() => handleClasRoomDelete(classRoom._id)}
                         >
                           <DeleteIcon sx={{ fontSize: 30 }} />
-                        </IconButton>
+                        </IconButton> */}
                       </Stack>
                     </TableCell>
                   </TableRow>

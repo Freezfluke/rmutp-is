@@ -22,6 +22,16 @@ const CreateClassRoom = (props) => {
   const { token } = auth;
   const { user } = auth;
 
+  const navigate = useNavigate();
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  //   const handleChange = (e) => {
+  //     setValues({ ...values, [e.target.name]: e.target.value });
+  //   };
+
   const handleChangeSelect = async (e) => {
     setTeacher(e.target.value);
     setNameTeacher();
@@ -34,7 +44,6 @@ const CreateClassRoom = (props) => {
         classRoom,
         teacher,
       });
-      console.log("Create ClassRoom Res", res);
       toast.success("สร้างชั้นเรียนเรียบร้อยแล้ว");
       setTimeout(() => {
         window.location.reload();

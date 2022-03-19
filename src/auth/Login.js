@@ -36,7 +36,7 @@ const Login = () => {
             type: "LOGGED_IN_USER",
             payload: res.data,
           });
-          navigate("/home");
+          navigate("/petition");
         }, 100);
       }
     } catch (err) {
@@ -52,27 +52,21 @@ const Login = () => {
       <Card
         className="box"
         sx={{
-          maxWidth: 450,
-          marginTop: 20,
+          maxWidth: 800,
+          marginTop: 13,
+          borderRadius: 5,
         }}
       >
-        <LoginForm
-          handleSubmit={handleSubmit}
-          email={email}
-          setEmail={setEmail}
-          password={password}
-          setPassword={setPassword}
-          open={open}
-          setOpen={setOpen}
-        />
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginBottom: "10px",
-          }}
-        >
-          แนะนำการใช้งานขนาดหน้าจอ 1366 x 768 ขึ้นไป
+        <div style={{ margin: "40px" }}>
+          <LoginForm
+            handleSubmit={handleSubmit}
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            open={open}
+            setOpen={setOpen}
+          />
         </div>
       </Card>
     </>
