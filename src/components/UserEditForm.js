@@ -487,7 +487,7 @@ const UserEditForm = (props) => {
       {" "}
       <Avatar
         src={prwview}
-        sx={{ width: 240, height: 240, alignItems: "center" }}
+        sx={{ width: 220, height: 300, alignItems: "center" }}
       />
     </Stack>
   );

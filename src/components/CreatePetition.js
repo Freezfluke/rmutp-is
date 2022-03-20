@@ -57,23 +57,26 @@ const CreatePetition = (props) => {
   }, []);
 
   const loadAllStudent = async (e) => {
-    let res = await allUser();
-    console.log("res", res);
-    let student = res.data.filter((studentData) => {
-      return studentData.email === user.email;
-    });
+    if (user.role === "นักศึกษา") {
+      let res = await allUser();
+      console.log("res", res);
+      let student = res.data.filter((studentData) => {
+        return studentData.email === user.email;
+      });
 
-    let branchHead = res.data.filter((branchHeadData) => {
-      return branchHeadData.role === "หัวหน้าสาขา";
-    });
-    console.log("branchHead", branchHead[0]);
-    console.log("student", student[0]);
-    setValues({
-      ...values,
-      from: student[0]._id,
-      classRoom: student[0].classRoom,
-      branchHead: branchHead[0]._id,
-    });
+      let branchHead = res.data.filter((branchHeadData) => {
+        return branchHeadData.role === "หัวหน้าสาขา";
+      });
+      console.log("branchHead", branchHead[0]);
+      console.log("student", student[0]);
+      setValues({
+        ...values,
+        from: student[0]._id,
+        classRoom: student[0].classRoom,
+        branchHead: branchHead[0]._id,
+      });
+    } else {
+    }
   };
 
   const handleSubmit = async (e) => {
