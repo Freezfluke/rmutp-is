@@ -102,7 +102,7 @@ const CreateClassRoomForm = (props) => {
               <CloseIcon />
             </IconButton>
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              สร้างชั้นเรียนใหม่
+              เพิ่มชั้นเรียน
             </Typography>
           </Toolbar>
         </AppBar>

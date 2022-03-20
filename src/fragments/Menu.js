@@ -173,14 +173,14 @@ export default function Menu(props) {
 
           <ListItem
             button
-            key="ตรวจสอบคำร้อง"
+            key="จัดการคำร้อง"
             component={NavLink}
             to="/petition"
           >
             <ListItemIcon>
               <DocumentScannerIcon />
             </ListItemIcon>
-            <ListItemText primary="ตรวจสอบคำร้อง" />
+            <ListItemText primary="จัดการคำร้อง" />
           </ListItem>
         </List>
       ) : (
